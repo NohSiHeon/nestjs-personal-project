@@ -34,6 +34,8 @@ export class UserService {
       password: hashedPassword,
       nickname,
     });
+
+    return { email, nickname };
   }
 
   async signup(email: string, password: string) {
