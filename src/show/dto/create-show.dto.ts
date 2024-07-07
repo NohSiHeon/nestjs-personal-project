@@ -1,11 +1,4 @@
-import {
-  IsDateString,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Category } from '../types/showCategory.type';
 
 export class CreateShowDto {
@@ -36,12 +29,4 @@ export class CreateShowDto {
   @IsNumber()
   @IsNotEmpty({ message: '총 좌석을 입력해주세요.' })
   totalSeat: number;
-
-  @IsDateString()
-  @IsNotEmpty({ message: '공연 일정을 입력해주세요.' })
-  time: Date;
-
-  @IsInt()
-  @IsNotEmpty({ message: '가능한 좌석을 입력해주세요.' })
-  availableSeat: number;
 }

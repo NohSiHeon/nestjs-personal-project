@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { CreateShowDto } from './dto/create-show.dto';
-import { Show } from './entities/show.entity';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/user/types/userRole.type';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Category } from './types/showCategory.type';
+import { CreateScheduleDto } from 'src/schedule/dto/create-schedule.dto';
 
 @UseGuards(RolesGuard)
 @Controller('show')
@@ -22,8 +22,11 @@ export class ShowController {
 
   @Roles(Role.Admin)
   @Post()
-  async create(@Body() createShowDto: CreateShowDto): Promise<Show> {
-    return await this.showService.createShow(createShowDto);
+  async create(
+    @Body() createShowDto: CreateShowDto,
+    @Body('schedule') createScheduleDtos: CreateScheduleDto[],
+  ) {
+    return await this.showService.createShow(createShowDto, createScheduleDtos);
   }
 
   @Get()

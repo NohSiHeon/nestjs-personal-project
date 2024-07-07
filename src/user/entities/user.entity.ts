@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Role } from '../types/userRole.type';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 
 @Entity({
   name: 'users',
@@ -23,4 +24,7 @@ export class User {
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
   role: Role;
+
+  @OneToMany(() => Ticket, (ticket) => ticket.user)
+  ticket: Ticket[];
 }

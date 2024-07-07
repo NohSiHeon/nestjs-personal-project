@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Show } from './entities/show.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -10,6 +6,7 @@ import { CreateShowDto } from './dto/create-show.dto';
 import _ from 'lodash';
 import { Category } from './types/showCategory.type';
 import { Schedule } from 'src/schedule/entities/schedule.entity';
+import { CreateScheduleDto } from 'src/schedule/dto/create-schedule.dto';
 
 @Injectable()
 export class ShowService {
@@ -22,7 +19,10 @@ export class ShowService {
   ) {}
 
   // 공연 등록
-  async createShow(createShowDto: CreateShowDto): Promise<any> {
+  async createShow(
+    createShowDto: CreateShowDto,
+    createScheduleDtos: CreateScheduleDto[],
+  ) {
     // 트랜잭션 생성
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -30,39 +30,23 @@ export class ShowService {
     await queryRunner.startTransaction();
     try {
       // 엔터티 생성 및 데이터 할당
-
       const show = this.showRepository.create(createShowDto);
-
       // 엔터티 저장
       const savedShow = await queryRunner.manager.save(show);
 
-      // 스케줄 엔터티 생성
-      const schedule = new Schedule();
-
-      // 테이블 관계 설정
-      schedule.show = savedShow;
-
-      // dto로부터 값 할당
-      schedule.availableSeat = createShowDto.availableSeat;
-      schedule.time = createShowDto.time;
-
-      // 스케줄 엔터티 저장
-      await queryRunner.manager.save(schedule);
-
+      for (const createScheduleDto of createScheduleDtos) {
+        const { time, availableSeat } = createScheduleDto;
+        await queryRunner.manager.save(Schedule, {
+          time,
+          availableSeat,
+          showId: savedShow.id,
+        });
+      }
       // 트랜잭션 커밋
       await queryRunner.commitTransaction();
 
-      const showSchedules = await this.showRepository.findOne({
-        where: { id: savedShow.id },
-        relations: ['schedule'],
-      });
-
-      const schedules = showSchedules.schedule.map((schedule) => ({
-        time: schedule.time,
-        availableSeat: schedule.availableSeat,
-      }));
       // 결과 반환
-      return { ...savedShow, schedules };
+      return savedShow;
     } catch (error) {
       // 트랜잭션 롤백
       await queryRunner.rollbackTransaction();
