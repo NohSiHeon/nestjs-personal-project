@@ -1,4 +1,5 @@
 import { Show } from 'src/show/entities/show.entity';
+import { Ticket } from 'src/ticket/entities/ticket.entity';
 import {
   Column,
   CreateDateColumn,
@@ -6,16 +7,19 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'schedules',
+})
 export class Schedule {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', unique: true, nullable: false })
+  @Column({ type: 'int', nullable: false })
   showId: number;
 
   @Column({ type: 'int', nullable: false })
@@ -36,4 +40,7 @@ export class Schedule {
   @ManyToOne(() => Show, (show) => show.schedule)
   @JoinColumn({ name: 'show_id' })
   show: Show;
+
+  @OneToMany(() => Ticket, (ticket) => ticket.schedule)
+  ticket: Ticket[];
 }
