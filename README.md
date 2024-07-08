@@ -1,3 +1,11 @@
+## API 명세서
+
+https://www.notion.so/API-92a8411b19914f6fbe78ec7f1f13481d?pvs=4
+
+## ERD
+
+https://drawsql.app/teams/nohsi/diagrams/ts-ticketing
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
